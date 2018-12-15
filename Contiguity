@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+import arcpy
+import math
+arcpy.env.workspace=r"E:\small paper\data\高密度用地栅格点\1995"
+fclist=arcpy.ListFeatureClasses()
+infc=r"E:\small paper\data\result\主城区\中心点\1995年总中心点.shp"
+
+cursor1=arcpy.da.SearchCursor(infc,["名称","SHAPE@XY"])
+central_point={}
+for row in cursor1: #提取中心点的坐标，并保存为字典
+    x,y=row[1]
+    central_point[row[0]]=x,y
+for file in fclist:
+    cursor2=arcpy.da.SearchCursor(file,["SHAPE@XY"])
+    zuobiao=central_point[file.rstrip(".shp")] #获取对应城市的中心点坐标
+    sum=0
+    num=0
+    for row1 in cursor2:
+        X,Y=row1[0] #获取每个点的坐标
+        sum+=((X-zuobiao[0])**2.0+(Y-zuobiao[1])**2.0)**(1/2.0)
+        num+=1
+    mean=sum/num
+    lingjiedu=mean/1000 #把单位换算成千米
+
+    print lingjiedu
+
+
+del row
+
